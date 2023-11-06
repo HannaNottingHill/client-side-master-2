@@ -1,6 +1,4 @@
-import React from "react";
-
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MovieCard } from "../movie-card/movie-card";
 import { MovieView } from "../movie-view/movie-view";
 import { LoginView } from "../login-view/login-view";
@@ -35,6 +33,21 @@ export const MainView = () => {
         setMovies(movies);
       });
   }, [token]);
+
+  // Define the handleUserUpdate function
+  const handleUserUpdate = async (userData) => {
+    // Implement your logic to update the user here
+    // You can update the user state with the new data
+    setUser(userData);
+  };
+
+  // Define the handleUserDeregister function
+  const handleUserDeregister = async () => {
+    // Implement your logic for user deregistration
+    // You can clear user-related data and token here
+    setUser(null);
+    setToken(null);
+  };
 
   return (
     <BrowserRouter>
@@ -74,6 +87,18 @@ export const MainView = () => {
               </>
             }
           />
+          <Route
+            path="/profile"
+            element={
+              <ProfileView
+                user={user}
+                movies={movies}
+                onUserUpdate={handleUserUpdate}
+                onUserDeregister={handleUserDeregister}
+              />
+            }
+          />
+
           <Route
             path="/movies/:movieId"
             element={
