@@ -5,3 +5,18 @@
   border: none;
   border-radius: 4px;
 }
+// Add these styles to your movie-view.scss
+.similar-movies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px; // Adjust the gap between similar movies as needed
+}
+
+.similar-movie {
+  text-align: center;
+}
+
+.similar-movie-image {
+  max-width: 200px; // Adjust the maximum width as needed
+  max-height: 250px; // Adjust the maximum height as needed
+}

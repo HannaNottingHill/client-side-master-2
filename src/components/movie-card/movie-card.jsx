@@ -5,7 +5,12 @@ import { Link } from "react-router-dom";
 
 import "./movie-card.scss";
 
-export const MovieCard = ({ movie }) => {
+export const MovieCard = ({
+  movie,
+  onAddFavorite,
+  onRemoveFavorite,
+  isFavorite,
+}) => {
   return (
     <Card className="h-100">
       <Card.Img variant="top" src={movie.imagePath} />
@@ -15,6 +20,15 @@ export const MovieCard = ({ movie }) => {
         <Link to={`/movies/${encodeURIComponent(movie._id)}`}>
           <Button variant="link">Open</Button>
         </Link>
+        {isFavorite ? (
+          <Button variant="danger" onClick={() => onRemoveFavorite(movie._id)}>
+            Remove from Favorites
+          </Button>
+        ) : (
+          <Button variant="success" onClick={() => onAddFavorite(movie._id)}>
+            Add to Favorites
+          </Button>
+        )}
       </Card.Body>
     </Card>
   );
@@ -28,4 +42,7 @@ MovieCard.propTypes = {
       name: PropTypes.string.isRequired,
     }),
   }).isRequired,
+  onAddFavorite: PropTypes.func.isRequired,
+  onRemoveFavorite: PropTypes.func.isRequired,
+  isFavorite: PropTypes.bool.isRequired,
 };

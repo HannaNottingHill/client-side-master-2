@@ -7,11 +7,13 @@ import { Row, Col } from "react-bootstrap";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { NavigationBar } from "../navigation-bar/navigation-bar";
 import ProfileView from "../profile-view/profile-view";
+import MovieList from "../movie-list/movie-list";
 
 export const MainView = () => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [movies, setMovies] = useState([]);
+  const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -34,6 +36,16 @@ export const MainView = () => {
       });
   }, [token]);
 
+  // Function to add a movie to favorites
+  const addFavorite = (movieId) => {
+    setFavorites([...favorites, movieId]);
+  };
+
+  // Function to remove a movie from favorites
+  const removeFavorite = (movieId) => {
+    setFavorites(favorites.filter((id) => id !== movieId));
+  };
+
   // Define the handleUserUpdate function
   const handleUserUpdate = async (userData) => {
     // Implement your logic to update the user here
@@ -55,6 +67,9 @@ export const MainView = () => {
         user={user}
         onLoggedOut={() => {
           setUser(null);
+          setToken(null);
+          localStorage.removeItem("user");
+          localStorage.removeItem("token");
         }}
       />
       <Row className="justify-content-md-center">
@@ -93,6 +108,7 @@ export const MainView = () => {
               <ProfileView
                 user={user}
                 movies={movies}
+                favorites={favorites}
                 onUserUpdate={handleUserUpdate}
                 onUserDeregister={handleUserDeregister}
               />
@@ -129,7 +145,12 @@ export const MainView = () => {
                   <>
                     {movies.map((movie) => (
                       <Col className="mb-4" key={movie.id} md={3}>
-                        <MovieCard movie={movie} />
+                        <MovieCard
+                          movie={movie}
+                          onAddFavorite={addFavorite}
+                          onRemoveFavorite={removeFavorite}
+                          isFavorite={favorites.includes(movie._id)}
+                        />
                       </Col>
                     ))}
                   </>
