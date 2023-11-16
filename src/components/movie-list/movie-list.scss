@@ -1,0 +1,16 @@
+@import "../variables";
+
+.movie-list {
+  display: flex;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding: 20px 0;
+
+  // Remove scrollbar visibility
+  -ms-overflow-style: none; // For Internet Explorer, Edge
+  scrollbar-width: none; // For Firefox
+
+  &::-webkit-scrollbar {
+    display: none; // For Chrome, Safari, and Opera
+  }
+}

@@ -77,7 +77,6 @@ function ProfileView({
           <p>Username: {userData.username}</p>
           <p>Email: {userData.email}</p>
           <p>Birthday: {userData.birthday}</p>
-          {/* You can display more user information as needed */}
         </div>
       ) : (
         <p>Loading user data...</p>

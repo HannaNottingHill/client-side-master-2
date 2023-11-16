@@ -1,0 +1,54 @@
+@import "../variables";
+
+.heart-icon {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background-color: black;
+  position: relative;
+  transform: rotate(-45deg);
+  margin: 5px;
+
+  &:before,
+  &:after {
+    content: "";
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: black;
+    position: absolute;
+  }
+
+  &:before {
+    top: -15px;
+    left: 0;
+  }
+
+  &:after {
+    top: 0;
+    left: 15px;
+  }
+
+  &.favorite {
+    background-color: red;
+
+    &:before,
+    &:after {
+      background-color: red;
+    }
+  }
+}
+
+.movie-card {
+  background-color: black;
+  border: none;
+  color: white;
+  display: inline-block;
+  margin-right: 10px;
+  width: 200px;
+
+  img {
+    width: 100%;
+    height: auto;
+  }
+}

@@ -20,15 +20,12 @@ export const MovieCard = ({
         <Link to={`/movies/${encodeURIComponent(movie._id)}`}>
           <Button variant="link">Open</Button>
         </Link>
-        {isFavorite ? (
-          <Button variant="danger" onClick={() => onRemoveFavorite(movie._id)}>
-            Remove from Favorites
-          </Button>
-        ) : (
-          <Button variant="success" onClick={() => onAddFavorite(movie._id)}>
-            Add to Favorites
-          </Button>
-        )}
+        <div
+          className={`heart-icon ${isFavorite ? "favorite" : ""}`}
+          onClick={() =>
+            isFavorite ? onRemoveFavorite(movie._id) : onAddFavorite(movie._id)
+          }
+        ></div>
       </Card.Body>
     </Card>
   );

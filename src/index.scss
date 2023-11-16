@@ -1,4 +1,9 @@
-$primary: SeaGreen;
-$body-bg: Honeydew;
+@import "/src/components/variables";
+
+body,
+.app-container {
+  background-color: black;
+  color: white;
+}
 
 @import "~bootstrap/dist/css/bootstrap.min.css";

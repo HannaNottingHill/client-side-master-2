@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import MovieCard from "../movie-card/movie-card";
+import "./movie-list.scss";
 
 function MovieList({
   movies,
