@@ -1,43 +1,33 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import "../login-view/login-view.scss";
 
 export const LoginView = ({ onLoggedIn }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    const data = {
-      username: username,
-      password: password,
-    };
-
-    console.log("Sending login request with data: ", data);
+    const data = { username, password };
 
     fetch("http://localhost:8080/login", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Login response: ", data);
         if (data.user) {
           localStorage.setItem("user", JSON.stringify(data.user));
           localStorage.setItem("token", data.token);
           onLoggedIn(data.user, data.token);
         } else {
-          alert("No such user");
+          setErrorMessage("Username or password doesn't match");
         }
       })
-      .catch((e) => {
-        alert("Something went wrong");
-      });
+      .catch((e) => setErrorMessage("Something went wrong"));
   };
 
   return (
@@ -52,7 +42,6 @@ export const LoginView = ({ onLoggedIn }) => {
           minLength="3"
         />
       </Form.Group>
-
       <Form.Group controlId="formPassword">
         <Form.Label>Password:</Form.Label>
         <Form.Control
@@ -62,6 +51,7 @@ export const LoginView = ({ onLoggedIn }) => {
           required
         />
       </Form.Group>
+      {errorMessage && <div className="error-message">{errorMessage}</div>}
       <Button variant="primary" type="submit">
         Submit
       </Button>
