@@ -20,11 +20,11 @@ export const MovieView = ({ movies }) => {
   console.log("movie director:", movie.director.name); // Corrected to access movie.director.name
 
   return (
-    <div>
+    <div className="movie-view-container">
       <div>
-        <img className="w-100" src={movie.imagePath} />
+        <img className="movie-image" src={movie.imagePath} />
       </div>
-      <div>
+      <div className="movie-details">
         <span>Title: </span>
         <span>{movie.title}</span>
       </div>

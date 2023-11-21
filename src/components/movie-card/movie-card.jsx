@@ -25,6 +25,7 @@ export const MovieCard = ({
           onClick={() =>
             isFavorite ? onRemoveFavorite(movie._id) : onAddFavorite(movie._id)
           }
+          title={isFavorite ? "Remove from Favorites" : "Add to Favorites"}
         ></div>
       </Card.Body>
     </Card>

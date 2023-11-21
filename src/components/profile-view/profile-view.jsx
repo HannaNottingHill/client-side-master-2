@@ -1,91 +1,134 @@
+import "./profile-view.scss";
 import React, { useState, useEffect } from "react";
 import { MovieCard } from "../movie-card/movie-card";
 
 function ProfileView({
   user,
-  movies,
-  favorites,
+  favoriteMovies,
   onAddFavorite,
   onRemoveFavorite,
+  onUserUpdate,
+  onUserDeregister,
 }) {
-  const favoriteMovies = movies.filter((movie) =>
-    favorites.includes(movie._id)
-  );
   const [userData, setUserData] = useState(null);
-
-  // Initialize state variables for form fields
   const [editUsername, setEditUsername] = useState("");
   const [editPassword, setEditPassword] = useState("");
   const [editEmail, setEditEmail] = useState("");
   const [editBirthday, setEditBirthday] = useState("");
 
-  // Populate form fields with user data when available
   useEffect(() => {
-    if (userData) {
-      setEditUsername(userData.username);
-      setEditEmail(userData.email);
-      setEditBirthday(userData.birthday);
-    }
-  }, [userData]);
-
-  useEffect(() => {
-    // Fetch user data from the /users endpoint
     if (user) {
-      fetch(`http://localhost:8080/users/${user.username}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          setUserData(data);
-        })
-        .catch((error) => {
-          console.error("Error fetching user data: ", error);
-        });
+      fetchUserData();
     }
   }, [user]);
 
-  const handleProfileUpdate = (e) => {
-    e.preventDefault(); // Prevent default form submission
-    fetch(`http://localhost:8080/users/${user.username}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      body: JSON.stringify({
-        username: editUsername,
-        password: editPassword, // Handle empty password appropriately
-        email: editEmail,
-        birthday: editBirthday,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        // Update user data and potentially update local storage or user state
-        setUserData(data);
-      })
-      .catch((error) => console.error("Error updating profile: ", error));
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/users/${user.username}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      const data = await response.json();
+      setUserData(data);
+      setEditUsername(data.username);
+      setEditEmail(data.email);
+      setEditBirthday(data.birthday);
+    } catch (error) {
+      console.error("Error fetching user data: ", error);
+    }
+  };
+
+  const handleProfileUpdate = async (e) => {
+    e.preventDefault();
+    const updatedData = {
+      username: editUsername,
+      email: editEmail,
+      birthday: editBirthday,
+    };
+
+    if (editPassword) {
+      updatedData.password = editPassword;
+    }
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/users/${user.username}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(updatedData),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Error in updating profile");
+      }
+
+      const data = await response.json();
+      setUserData(data);
+      alert("Profile updated successfully");
+    } catch (error) {
+      console.error("Error updating profile: ", error);
+      alert("Failed to update profile");
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    const confirmation = window.confirm(
+      "Are you sure you want to delete your account? This action cannot be undone."
+    );
+
+    if (confirmation) {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/users/${user.username}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Error in deleting account");
+        }
+
+        alert("Account deleted successfully");
+        onUserDeleted(); // Handle the UI changes after user deletion
+      } catch (error) {
+        console.error("Error deleting account: ", error);
+        alert("Failed to delete account");
+      }
+    }
   };
 
   return (
-    <div>
-      <h2>User Profile</h2>
-      {userData ? (
-        <div>
-          <p>Username: {userData.username}</p>
-          <p>Email: {userData.email}</p>
-          <p>Birthday: {userData.birthday}</p>
-        </div>
-      ) : (
-        <p>Loading user data...</p>
-      )}
+    <div className="profile-view-container">
+      <div className="user-info">
+        <h2>User Profile</h2>
+        {userData ? (
+          <div>
+            <p>Username: {userData.username}</p>
+            <p>Email: {userData.email}</p>
+            <p>Birthday: {new Date(userData.birthday).toLocaleDateString()}</p>
+          </div>
+        ) : (
+          <p>Loading user data...</p>
+        )}
+      </div>
 
       <h3>Favorites</h3>
-      {favoriteMovies.length > 0 ? (
-        <div>
-          {favoriteMovies.map((movie) => (
+      <div className="favorites-container">
+        {favoriteMovies.length > 0 ? (
+          favoriteMovies.map((movie) => (
             <MovieCard
               key={movie._id}
               movie={movie}
@@ -93,35 +136,50 @@ function ProfileView({
               onRemoveFavorite={onRemoveFavorite}
               isFavorite={true}
             />
-          ))}
-        </div>
-      ) : (
-        <p>No favorites added.</p>
-      )}
+          ))
+        ) : (
+          <p>No favorites added.</p>
+        )}
+      </div>
 
-      <form onSubmit={handleProfileUpdate}>
-        <input
-          type="text"
-          value={editUsername}
-          onChange={(e) => setEditUsername(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="New Password (leave blank to keep current)"
-          onChange={(e) => setEditPassword(e.target.value)}
-        />
-        <input
-          type="email"
-          value={editEmail}
-          onChange={(e) => setEditEmail(e.target.value)}
-        />
-        <input
-          type="date"
-          value={editBirthday}
-          onChange={(e) => setEditBirthday(e.target.value)}
-        />
-        <button type="submit">Update Profile</button>
-      </form>
+      <div className="updateUserAccount">
+        <h3>Update Account</h3>
+        <form onSubmit={handleProfileUpdate}>
+          <input
+            type="text"
+            placeholder="New Username"
+            value={editUsername}
+            onChange={(e) => setEditUsername(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="New Password"
+            onChange={(e) => setEditPassword(e.target.value)}
+          />
+          <input
+            type="email"
+            placeholder="New Email"
+            value={editEmail}
+            onChange={(e) => setEditEmail(e.target.value)}
+          />
+          <input
+            type="date"
+            placeholder="Date of Birth"
+            value={editBirthday}
+            onChange={(e) => setEditBirthday(e.target.value)}
+          />
+          <button type="submit" className="update-profile-button">
+            Update Profile
+          </button>
+        </form>
+        <button
+          id="deleteAccountButton"
+          className="delete-account-button"
+          onClick={handleDeleteAccount}
+        >
+          Delete Account
+        </button>
+      </div>
     </div>
   );
 }
