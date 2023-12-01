@@ -58,9 +58,6 @@ export const NavigationBar = ({ user, onLoggedOut, handleFilterChange }) => {
               onChange={handleInputChange}
               className="custom-search-box"
             />
-            <Button variant="outline-success" className="custom-search-button">
-              Search
-            </Button>
           </Form>
         </Navbar.Collapse>
       </Container>
