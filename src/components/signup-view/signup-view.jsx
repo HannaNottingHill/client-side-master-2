@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import "./signup-view.scss";
+import { useNavigate } from "react-router-dom";
 
 export const SignupView = () => {
   const [username, setUsername] = useState("");
@@ -67,6 +68,8 @@ export const SignupView = () => {
     setPasswordError("");
   };
 
+  const navigate = useNavigate();
+
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -101,7 +104,7 @@ export const SignupView = () => {
       .then((data) => {
         // Handle successful response
         alert("Signup successful");
-        window.location.reload();
+        navigate("/"); // Redirect to the home page
       })
       .catch((error) => {
         console.error(error);

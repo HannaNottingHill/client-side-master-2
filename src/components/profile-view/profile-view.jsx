@@ -1,6 +1,7 @@
 import "./profile-view.scss";
 import React, { useState, useEffect } from "react";
 import { MovieCard } from "../movie-card/movie-card";
+import { Row, Col, Container } from "react-bootstrap";
 
 function ProfileView({
   user,
@@ -15,6 +16,10 @@ function ProfileView({
   const [editPassword, setEditPassword] = useState("");
   const [editEmail, setEditEmail] = useState("");
   const [editBirthday, setEditBirthday] = useState("");
+  const [usernameError, setUsernameError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [birthdayError, setBirthdayError] = useState("");
 
   useEffect(() => {
     if (user) {
@@ -42,8 +47,70 @@ function ProfileView({
     }
   };
 
+  const validateUsername = () => {
+    if (!editUsername) {
+      setUsernameError("Username is required");
+      return false;
+    }
+    setUsernameError("");
+    return true;
+  };
+
+  const validatePassword = () => {
+    // Regular expression to check for at least one special character
+    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+
+    if (!editPassword) {
+      setPasswordError("Password is required");
+      return false;
+    }
+
+    if (!specialCharRegex.test(editPassword)) {
+      setPasswordError("Password must include at least one special character");
+      return false;
+    }
+
+    setPasswordError("");
+    return true;
+  };
+
+  const validateEmail = () => {
+    if (!editEmail) {
+      setEmailError("Email is required");
+      return false;
+    }
+    setEmailError("");
+    return true;
+  };
+
+  const validateBirthday = () => {
+    if (!editBirthday) {
+      setBirthdayError("Birthday is required");
+      return false;
+    }
+
+    setBirthdayError("");
+    return true;
+  };
+
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
+
+    // Perform validation checks
+    const isUsernameValid = validateUsername();
+    const isPasswordValid = validatePassword();
+    const isEmailValid = validateEmail();
+    const isBirthdayValid = validateBirthday();
+
+    if (
+      !isUsernameValid ||
+      !isPasswordValid ||
+      !isEmailValid ||
+      !isBirthdayValid
+    ) {
+      return; // Stop the form submission if validation fails
+    }
+
     const updatedData = {
       username: editUsername,
       email: editEmail,
@@ -99,7 +166,6 @@ function ProfileView({
 
         if (response.ok) {
           alert("Account deleted successfully");
-          onLoggedOut();
         } else {
           // Handle error scenario
           const errorData = await response.json();
@@ -116,7 +182,7 @@ function ProfileView({
   return (
     <div className="profile-view-container">
       <div className="user-info">
-        <h2>User Profile</h2>
+        <h2>User Details:</h2>
         {userData ? (
           <div>
             <p>Username: {userData.username}</p>
@@ -128,18 +194,23 @@ function ProfileView({
         )}
       </div>
 
-      <h3>Favorites</h3>
+      <h2 className="second-title">Favorites:</h2>
       <div className="favorites-container">
         {favoriteMovies.length > 0 ? (
-          favoriteMovies.map((movie) => (
-            <MovieCard
-              key={movie._id}
-              movie={movie}
-              onAddFavorite={onAddFavorite}
-              onRemoveFavorite={onRemoveFavorite}
-              isFavorite={true}
-            />
-          ))
+          <Container xs={1} md={2} lg={3} xl={4} xxl={4} className="g-4">
+            <Row>
+              {favoriteMovies.map((movie) => (
+                <Col key={movie._id} md={3} className="mb-3">
+                  <MovieCard
+                    movie={movie}
+                    onAddFavorite={onAddFavorite}
+                    onRemoveFavorite={onRemoveFavorite}
+                    isFavorite={true}
+                  />
+                </Col>
+              ))}
+            </Row>
+          </Container>
         ) : (
           <p>No favorites added.</p>
         )}
@@ -153,24 +224,38 @@ function ProfileView({
             placeholder="New Username"
             value={editUsername}
             onChange={(e) => setEditUsername(e.target.value)}
+            onBlur={validateUsername}
           />
+          {usernameError && (
+            <div className="error-message">{usernameError}</div>
+          )}
           <input
             type="password"
             placeholder="New Password"
             onChange={(e) => setEditPassword(e.target.value)}
+            onBlur={validatePassword}
           />
+          {passwordError && (
+            <div className="error-message">{passwordError}</div>
+          )}
           <input
             type="email"
             placeholder="New Email"
             value={editEmail}
             onChange={(e) => setEditEmail(e.target.value)}
+            onBlur={validateEmail}
           />
+          {emailError && <div className="error-message">{emailError}</div>}
           <input
             type="date"
             placeholder="Date of Birth"
             value={editBirthday}
             onChange={(e) => setEditBirthday(e.target.value)}
+            onBlur={validateBirthday}
           />
+          {birthdayError && (
+            <div className="error-message">{birthdayError}</div>
+          )}
           <button type="submit" className="update-profile-button">
             Update Profile
           </button>

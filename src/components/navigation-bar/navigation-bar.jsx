@@ -1,3 +1,4 @@
+import "./navigation-bar.scss";
 import { Navbar, Container, Nav } from "react-bootstrap";
 import { Link } from "react-router-dom";
 

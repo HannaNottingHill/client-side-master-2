@@ -6,14 +6,17 @@
   margin: auto;
   padding: 20px;
 }
-
+h1 {
+  padding-bottom: 20px;
+}
 .movie-image {
   width: 100%;
   max-width: 400px;
-  height: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 433px; /* Set the maximum width to 500px */
+  height: 500px; /* Set the maximum height to 433px */
   object-fit: cover;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .movie-details {

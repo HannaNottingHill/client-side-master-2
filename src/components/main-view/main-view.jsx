@@ -5,7 +5,7 @@ import { SignupView } from "../signup-view/signup-view";
 import { NavigationBar } from "../navigation-bar/navigation-bar";
 import ProfileView from "../profile-view/profile-view";
 import React, { useState, useEffect } from "react";
-import { Row, Col } from "react-bootstrap";
+import { Row, Col, Container } from "react-bootstrap";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 export const MainView = () => {
@@ -62,6 +62,8 @@ export const MainView = () => {
 
   // Function to fetch user data
   const fetchUserData = async () => {
+    if (!user) return;
+
     try {
       const response = await fetch(
         `http://localhost:8080/users/${user.username}`,
@@ -250,15 +252,11 @@ export const MainView = () => {
           <Route
             path="/"
             element={
-              <>
-                {!user ? (
-                  <Navigate to="/login" replace />
-                ) : movies.length === 0 ? (
-                  <Col>The list is empty!</Col>
-                ) : (
-                  <>
+              user ? (
+                <Container>
+                  <Row xs={1} md={2} lg={3} xl={3} xxl={4} className="g-4">
                     {movies.map((movie) => (
-                      <Col className="mb-4" key={movie.id} md={3}>
+                      <Col key={movie._id}>
                         <MovieCard
                           movie={movie}
                           onAddFavorite={addFavorite}
@@ -267,9 +265,11 @@ export const MainView = () => {
                         />
                       </Col>
                     ))}
-                  </>
-                )}
-              </>
+                  </Row>
+                </Container>
+              ) : (
+                <Navigate to="/login" />
+              )
             }
           />
         </Routes>

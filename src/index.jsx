@@ -3,7 +3,7 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.scss";
 import Container from "react-bootstrap/Container";
-
+import "./components/background.scss";
 import { MainView } from "./components/main-view/main-view";
 
 const App = () => {

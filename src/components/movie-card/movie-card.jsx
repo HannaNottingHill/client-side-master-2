@@ -1,9 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
+import "./movie-card.scss";
 import { Button, Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
-
-import "./movie-card.scss";
 
 export const MovieCard = ({
   movie,
@@ -13,12 +12,17 @@ export const MovieCard = ({
 }) => {
   return (
     <Card className="h-100">
-      <Card.Img variant="top" src={movie.imagePath} />
+      <div className="movie-card-image-wrapper">
+        <Card.Img variant="top" src={movie.imagePath} alt={movie.title} />
+      </div>
       <Card.Body>
-        <Card.Title>{movie.title}</Card.Title>
-        <Card.Text>{movie.director.name}</Card.Text>
+        <Card.Title>
+          <strong>
+            {movie.title} ({movie.year})
+          </strong>
+        </Card.Title>
         <Link to={`/movies/${encodeURIComponent(movie._id)}`}>
-          <Button variant="link">Open</Button>
+          <Button variant="custom">More</Button>
         </Link>
         <div
           className={`heart-icon ${isFavorite ? "favorite" : ""}`}
@@ -37,6 +41,9 @@ MovieCard.propTypes = {
     title: PropTypes.string.isRequired,
     imagePath: PropTypes.string.isRequired,
     director: PropTypes.shape({
+      name: PropTypes.string.isRequired,
+    }),
+    genre: PropTypes.shape({
       name: PropTypes.string.isRequired,
     }),
   }).isRequired,

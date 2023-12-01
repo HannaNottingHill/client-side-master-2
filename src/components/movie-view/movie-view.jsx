@@ -21,20 +21,20 @@ export const MovieView = ({ movies }) => {
 
   return (
     <div className="movie-view-container">
+      <h1>
+        {movie.title} ({movie.year})
+      </h1>
       <div>
-        <img className="movie-image" src={movie.imagePath} />
+        <img className="movie-image" src={movie.imagePath} alt={movie.title} />
       </div>
       <div className="movie-details">
-        <span>Title: </span>
-        <span>{movie.title}</span>
-      </div>
-      <div>
-        <span>Director: </span>
-        <span>{movie.director.name}</span>
-      </div>
-      <div>
-        <span>Genre: </span>
-        <span>{movie.genre.name}</span>
+        <p>{movie.description}</p>
+        <p>
+          <strong>Director:</strong> {movie.director.name}
+        </p>
+        <p>
+          <strong>Genre:</strong> {movie.genre.name}
+        </p>
       </div>
       <Link to={`/`}>
         <button className="back-button">Back</button>

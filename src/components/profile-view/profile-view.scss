@@ -1,46 +1,21 @@
 .profile-view-container {
   color: #fff;
 
+  .second-title {
+    padding-bottom: 14px;
+  }
   .user-info,
   .updateUserAccount {
-    margin-bottom: 30px;
     padding: 20px;
 
     border-radius: 8px;
 
-    h2,
-    h3 {
+    h2 {
       color: #fff;
     }
 
     p {
       color: #b3b3b3;
-    }
-  }
-
-  .favorites-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-
-    .movie-card {
-      flex: 1 1 300px;
-      background-color: #181818;
-      border-radius: 8px;
-
-      img {
-        width: 100%;
-        height: auto;
-      }
-
-      .card-body {
-        padding: 15px;
-
-        .card-title,
-        .card-text {
-          color: #fff;
-        }
-      }
     }
   }
 
@@ -90,4 +65,9 @@
       }
     }
   }
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
 }
