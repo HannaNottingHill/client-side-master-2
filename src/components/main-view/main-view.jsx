@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from "react";
 import { MovieCard } from "../movie-card/movie-card";
 import { MovieView } from "../movie-view/movie-view";
 import { LoginView } from "../login-view/login-view";
 import { SignupView } from "../signup-view/signup-view";
-import { Row, Col } from "react-bootstrap";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { NavigationBar } from "../navigation-bar/navigation-bar";
 import ProfileView from "../profile-view/profile-view";
-import MovieList from "../movie-list/movie-list";
+import React, { useState, useEffect } from "react";
+import { Row, Col } from "react-bootstrap";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 export const MainView = () => {
   const [user, setUser] = useState(null);
@@ -16,62 +15,171 @@ export const MainView = () => {
   const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
+    // Check for stored user and token
     const storedUser = JSON.parse(localStorage.getItem("user"));
     const storedToken = localStorage.getItem("token");
+
     if (storedUser && storedToken) {
       setUser(storedUser);
       setToken(storedToken);
+    } else {
+      // If there's no user or token in localStorage, reset states
+      setUser(null);
+      setToken(null);
     }
+  }, []);
 
-    if (!token) {
-      return;
+  useEffect(() => {
+    // Fetch movies if token is present
+    if (token) {
+      fetchMovies();
     }
-
-    fetch("http://localhost:8080/movies", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((response) => response.json())
-      .then((movies) => {
-        setMovies(movies);
-      });
   }, [token]);
 
+  useEffect(() => {
+    fetchUserData();
+  }, [user, token, movies]);
+
+  const fetchMovies = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/movies", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) {
+        // Handle response errors
+        console.error("Failed to fetch movies:", response.status);
+        return;
+      }
+
+      const moviesData = await response.json();
+      setMovies(moviesData);
+    } catch (error) {
+      // Handle fetch errors
+      console.error("Error fetching movies:", error);
+    }
+  };
+
+  // Function to fetch user data
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/users/${user.username}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (response.ok) {
+        const userData = await response.json();
+        setFavorites(userData.favorites || []); // Set favorites from fetched data
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
+  const onLoggedIn = (loggedUser, token) => {
+    setUser(loggedUser);
+    setToken(token);
+    localStorage.setItem("user", JSON.stringify(loggedUser));
+    localStorage.setItem("token", token);
+  };
+
+  const onLoggedOut = () => {
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    window.location.href = "/";
+  };
+
   // Function to add a movie to favorites
-  const addFavorite = (movieId) => {
+  const addFavorite = async (movieId) => {
+    await fetch(
+      `http://localhost:8080/users/${user.username}/movies/${movieId}`,
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
     setFavorites([...favorites, movieId]);
   };
 
   // Function to remove a movie from favorites
-  const removeFavorite = (movieId) => {
+  const removeFavorite = async (movieId) => {
+    await fetch(
+      `http://localhost:8080/users/${user.username}/movies/${movieId}`,
+      {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
     setFavorites(favorites.filter((id) => id !== movieId));
   };
 
   // Define the handleUserUpdate function
-  const handleUserUpdate = async (userData) => {
-    // Implement your logic to update the user here
-    // You can update the user state with the new data
-    setUser(userData);
+  const handleUserUpdate = async (updatedUserData) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/users/${user.username}`, // Ensure this is the correct username
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Ensure the token is valid
+          },
+          body: JSON.stringify(updatedUserData), // Ensure this contains username, email, and optionally password
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Response error:", errorData);
+        throw new Error("Error in updating profile: " + errorData.message);
+      }
+
+      const updatedUser = await response.json();
+      setUser(updatedUser); // Update user in the state
+      localStorage.setItem("user", JSON.stringify(updatedUser)); // Update user in localStorage
+    } catch (error) {
+      console.error("Error updating user:", error);
+    }
   };
 
   // Define the handleUserDeregister function
   const handleUserDeregister = async () => {
-    // Implement your logic for user deregistration
-    // You can clear user-related data and token here
-    setUser(null);
-    setToken(null);
+    try {
+      const response = await fetch(
+        `http://localhost:8080/users/${user.username}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        setUser(null);
+        setToken(null);
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+      } else {
+        throw new Error("Failed to delete user account");
+      }
+    } catch (error) {
+      console.error("Error deleting user account:", error);
+    }
   };
+
+  // Filter favorite movies
+  const favoriteMovies = movies.filter((movie) =>
+    favorites.includes(movie._id)
+  );
 
   return (
     <BrowserRouter>
-      <NavigationBar
-        user={user}
-        onLoggedOut={() => {
-          setUser(null);
-          setToken(null);
-          localStorage.removeItem("user");
-          localStorage.removeItem("token");
-        }}
-      />
+      <NavigationBar user={user} onLoggedOut={() => onLoggedOut()} />
       <Row className="justify-content-md-center">
         <Routes>
           <Route
@@ -96,7 +204,12 @@ export const MainView = () => {
                   <Navigate to="/" />
                 ) : (
                   <Col md={5}>
-                    <LoginView onLoggedIn={(user, token) => setToken(token)} />
+                    <LoginView
+                      onLoggedIn={(user, token) => {
+                        setUser(user);
+                        setToken(token);
+                      }}
+                    />
                   </Col>
                 )}
               </>
@@ -107,10 +220,11 @@ export const MainView = () => {
             element={
               <ProfileView
                 user={user}
-                movies={movies}
-                favorites={favorites}
+                favoriteMovies={favoriteMovies}
                 onUserUpdate={handleUserUpdate}
                 onUserDeregister={handleUserDeregister}
+                onAddFavorite={addFavorite}
+                onRemoveFavorite={removeFavorite}
               />
             }
           />

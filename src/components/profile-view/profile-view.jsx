@@ -97,14 +97,17 @@ function ProfileView({
           }
         );
 
-        if (!response.ok) {
-          throw new Error("Error in deleting account");
+        if (response.ok) {
+          alert("Account deleted successfully");
+          onLoggedOut();
+        } else {
+          // Handle error scenario
+          const errorData = await response.json();
+          console.error("Error deleting account:", errorData.message);
+          alert("Failed to delete account: " + errorData.message);
         }
-
-        alert("Account deleted successfully");
-        onUserDeleted(); // Handle the UI changes after user deletion
       } catch (error) {
-        console.error("Error deleting account: ", error);
+        console.error("Error deleting account:", error);
         alert("Failed to delete account");
       }
     }
