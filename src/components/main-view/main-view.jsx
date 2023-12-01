@@ -1,18 +1,20 @@
+import React, { useState, useEffect } from "react";
+import { Row, Col, Container } from "react-bootstrap";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { MovieCard } from "../movie-card/movie-card";
 import { MovieView } from "../movie-view/movie-view";
 import { LoginView } from "../login-view/login-view";
 import { SignupView } from "../signup-view/signup-view";
 import { NavigationBar } from "../navigation-bar/navigation-bar";
 import ProfileView from "../profile-view/profile-view";
-import React, { useState, useEffect } from "react";
-import { Row, Col, Container } from "react-bootstrap";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 export const MainView = () => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [movies, setMovies] = useState([]);
   const [favorites, setFavorites] = useState([]);
+  const [filterKeyword, setFilterKeyword] = useState("");
+  const [filteredMovies, setFilteredMovies] = useState([]);
 
   useEffect(() => {
     // Check for stored user and token
@@ -179,9 +181,28 @@ export const MainView = () => {
     favorites.includes(movie._id)
   );
 
+  const handleFilterChange = (inputText) => {
+    setFilterKeyword(inputText);
+  };
+
+  useEffect(() => {
+    const filtered = movies.filter((movie) =>
+      movie.title.toLowerCase().includes(filterKeyword.toLowerCase())
+    );
+    setFilteredMovies(filtered);
+  }, [filterKeyword, movies]);
+
   return (
     <BrowserRouter>
-      <NavigationBar user={user} onLoggedOut={() => onLoggedOut()} />
+      <NavigationBar
+        user={user}
+        onLoggedOut={() => onLoggedOut()}
+        movies={movies}
+        handleFilterChange={handleFilterChange}
+        filterKeyword={filterKeyword}
+        setFilteredMovies={setFilteredMovies}
+      />
+
       <Row className="justify-content-md-center">
         <Routes>
           <Route
@@ -255,7 +276,7 @@ export const MainView = () => {
               user ? (
                 <Container>
                   <Row xs={1} md={2} lg={3} xl={3} xxl={4} className="g-4">
-                    {movies.map((movie) => (
+                    {filteredMovies.map((movie) => (
                       <Col key={movie._id}>
                         <MovieCard
                           movie={movie}

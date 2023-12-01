@@ -1,8 +1,24 @@
-import "./navigation-bar.scss";
-import { Navbar, Container, Nav } from "react-bootstrap";
+import React, { useState } from "react";
+import {
+  Navbar,
+  Container,
+  Nav,
+  Form,
+  FormControl,
+  Button,
+} from "react-bootstrap";
 import { Link } from "react-router-dom";
+import "./navigation-bar.scss";
 
-export const NavigationBar = ({ user, onLoggedOut }) => {
+export const NavigationBar = ({ user, onLoggedOut, handleFilterChange }) => {
+  const [filterKeyword, setFilterKeyword] = useState("");
+
+  const handleInputChange = (e) => {
+    const inputText = e.target.value;
+    setFilterKeyword(inputText);
+    handleFilterChange(inputText);
+  };
+
   return (
     <Navbar bg="dark" variant="dark" expand="lg">
       <Container>
@@ -34,6 +50,18 @@ export const NavigationBar = ({ user, onLoggedOut }) => {
               </>
             )}
           </Nav>
+          <Form className="d-flex">
+            <FormControl
+              type="text"
+              placeholder="Search movies..."
+              value={filterKeyword}
+              onChange={handleInputChange}
+              className="custom-search-box"
+            />
+            <Button variant="outline-success" className="custom-search-button">
+              Search
+            </Button>
+          </Form>
         </Navbar.Collapse>
       </Container>
     </Navbar>
