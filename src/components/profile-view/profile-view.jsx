@@ -179,6 +179,14 @@ function ProfileView({
     }
   };
 
+  const scrollLeft = () => {
+    scrollContainerRef.current.scrollBy({ left: -200, behavior: "smooth" });
+  };
+
+  const scrollRight = () => {
+    scrollContainerRef.current.scrollBy({ left: 200, behavior: "smooth" });
+  };
+
   return (
     <div className="profile-view-container">
       <div className="user-info">
@@ -195,25 +203,29 @@ function ProfileView({
       </div>
 
       <h2 className="second-title">Favorites:</h2>
-      <div className="favorites-container">
-        {favoriteMovies.length > 0 ? (
-          <Container xs={1} md={2} lg={3} xl={4} xxl={4} className="g-4">
-            <Row>
-              {favoriteMovies.map((movie) => (
-                <Col key={movie._id} md={3} className="mb-3">
-                  <MovieCard
-                    movie={movie}
-                    onAddFavorite={onAddFavorite}
-                    onRemoveFavorite={onRemoveFavorite}
-                    isFavorite={true}
-                  />
-                </Col>
-              ))}
-            </Row>
-          </Container>
-        ) : (
-          <p>No favorites added.</p>
-        )}
+      <div className="favorites-scroll-container">
+        <button className="scroll-btn left" onClick={scrollLeft}>
+          &lt;
+        </button>
+        <Row noGutters className="favorites-row">
+          {favoriteMovies.length > 0 ? (
+            favoriteMovies.map((movie) => (
+              <Col key={movie._id} xs={6} md={4} lg={3} xl={3} className="mb-3">
+                <MovieCard
+                  movie={movie}
+                  onAddFavorite={onAddFavorite}
+                  onRemoveFavorite={onRemoveFavorite}
+                  isFavorite={true}
+                />
+              </Col>
+            ))
+          ) : (
+            <p>No favorites added.</p>
+          )}
+        </Row>
+        <button className="scroll-btn right" onClick={scrollRight}>
+          &gt;
+        </button>
       </div>
 
       <div className="updateUserAccount">

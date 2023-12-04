@@ -1,47 +1,66 @@
 @import "../variables";
 
 .movie-card {
-  width: 334px !important;
-  margin: 0 auto !important;
-  border: 5px solid lighten($background-color, 20%) !important;
-  color: white !important;
-  display: inline-block !important;
-  font-family: Arial, sans-serif !important;
-  position: relative !important;
+  border: 1px solid $darker-color;
+  border-radius: 5px;
+  box-shadow: 16px rgba(0, 0.8, 0.8, 0.8) !important; // Added shadow for depth
+  overflow: hidden;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px $darker-color;
+  }
 
   .movie-card-image-wrapper {
-    width: 100% !important;
-    position: relative !important;
-    overflow: hidden !important;
-    height: auto !important;
+    img {
+      width: 100%;
+      height: auto;
+    }
   }
+  .card-body {
+    background-color: $light-color;
+    color: darkblue;
+    padding: 10px;
 
-  .card-title {
-    color: black !important;
-    font-weight: bold !important;
-    font-size: 20px !important;
-    margin-bottom: 0px !important;
-    margin-top: 5px !important;
-    text-align: center !important;
+    .card-title {
+      font-weight: bold;
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .btn-custom {
+      background-color: $text-color;
+      &:hover {
+        background-color: darken($text-color, 35%);
+      }
+    }
   }
+}
+
+.card-body {
+  background-color: $text-color;
+  color: $darker-color;
+  padding: 10px;
 }
 
 .card-img-top {
   width: 100% !important;
-  height: 456px !important;
+  height: 420px !important;
 }
 
 .btn-custom {
-  background-color: black !important;
-  border: 1px solid white !important;
-  color: white !important;
-  right: -3px !important;
+  background-color: $darker-color;
+  color: $text-color;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
 
   &:hover {
     transform: scale(1.15) !important;
-    background-color: darken(black, 5%) !important;
-    border-color: lighten(white, 10%) !important;
-    color: white !important;
+    background-color: darken($light-color, 5%) !important;
+    border-color: lighten($text-color, 40%) !important;
+    color: $text-color !important;
   }
 }
 
@@ -64,6 +83,7 @@
 
   &:hover {
     transform: scale(1.3) !important;
+    color: $light-color;
   }
 
   &.favorite {
@@ -77,14 +97,4 @@
     transform: translateY(-5px) !important;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2) !important;
   }
-}
-
-.h-100 {
-  max-width: 334px;
-
-  border: 15px;
-}
-
-.movie-card {
-  margin: 0 auto;
 }
