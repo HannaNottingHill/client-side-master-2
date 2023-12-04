@@ -1,5 +1,5 @@
 import "./profile-view.scss";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { MovieCard } from "../movie-card/movie-card";
 import { Row, Col, Container } from "react-bootstrap";
 
@@ -8,8 +8,6 @@ function ProfileView({
   favoriteMovies,
   onAddFavorite,
   onRemoveFavorite,
-  onUserUpdate,
-  onUserDeregister,
 }) {
   const [userData, setUserData] = useState(null);
   const [editUsername, setEditUsername] = useState("");
@@ -179,6 +177,8 @@ function ProfileView({
     }
   };
 
+  const scrollContainerRef = useRef(null);
+
   const scrollLeft = () => {
     scrollContainerRef.current.scrollBy({ left: -200, behavior: "smooth" });
   };
@@ -203,7 +203,7 @@ function ProfileView({
       </div>
 
       <h2 className="second-title">Favorites:</h2>
-      <div className="favorites-scroll-container">
+      <div ref={scrollContainerRef} className="favorites-scroll-container">
         <button className="scroll-btn left" onClick={scrollLeft}>
           &lt;
         </button>

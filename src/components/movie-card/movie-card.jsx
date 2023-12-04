@@ -17,9 +17,7 @@ export const MovieCard = ({
       </div>
       <Card.Body>
         <Card.Title>
-          <strong>
-            {movie.title} ({movie.year})
-          </strong>
+          <strong>{movie.title}</strong>
         </Card.Title>
         <Link to={`/movies/${encodeURIComponent(movie._id)}`}>
           <Button variant="custom">More</Button>
