@@ -44,9 +44,12 @@ export const MainView = () => {
 
   const fetchMovies = async () => {
     try {
-      const response = await fetch("http://localhost:8080/movies", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await fetch(
+        "https://polar-spire-56979.herokuapp.com/movies", // Replace with your Heroku app URL
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (!response.ok) {
         // Handle response errors
@@ -68,15 +71,20 @@ export const MainView = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/users/${user.username}`,
+        `https://polar-spire-56979.herokuapp.com/users/${user.username}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      if (response.ok) {
-        const userData = await response.json();
-        setFavorites(userData.favorites || []); // Set favorites from fetched data
+
+      if (!response.ok) {
+        console.error("Error fetching user data. Status:", response.status);
+        // Handle specific error cases if needed
+        return;
       }
+
+      const userData = await response.json();
+      setFavorites(userData.favorites || []); // Set favorites from fetched data
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
@@ -100,7 +108,7 @@ export const MainView = () => {
   // Function to add a movie to favorites
   const addFavorite = async (movieId) => {
     await fetch(
-      `http://localhost:8080/users/${user.username}/movies/${movieId}`,
+      `https://polar-spire-56979.herokuapp.com/users/${user.username}/movies/${movieId}`,
       {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
@@ -112,7 +120,7 @@ export const MainView = () => {
   // Function to remove a movie from favorites
   const removeFavorite = async (movieId) => {
     await fetch(
-      `http://localhost:8080/users/${user.username}/movies/${movieId}`,
+      `https://polar-spire-56979.herokuapp.com/users/${user.username}/movies/${movieId}`,
       {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
@@ -125,7 +133,7 @@ export const MainView = () => {
   const handleUserUpdate = async (updatedUserData) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/users/${user.username}`, // Ensure this is the correct username
+        `https://polar-spire-56979.herokuapp.com/users/${user.username}`, // Ensure this is the correct username
         {
           method: "PUT",
           headers: {
@@ -154,7 +162,7 @@ export const MainView = () => {
   const handleUserDeregister = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/users/${user.username}`,
+        `https://polar-spire-56979.herokuapp.com/users/${user.username}`,
         {
           method: "DELETE",
           headers: {
